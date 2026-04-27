@@ -1,6 +1,6 @@
 import { Navigate } from "react-router-dom";
 import { AppLayout } from "../app/AppLayout";
-import { ConvertPage } from "../pages/ConvertPage";
+import { FxConversionPage } from "../pages/FxConversionPage";
 import { DashboardPage } from "../pages/DashboardPage";
 import { DepositPage } from "../pages/DepositPage";
 import { PayoutPage } from "../pages/PayoutPage";
@@ -66,11 +66,11 @@ export const routes: AppRouteObject[] = [
     path: routePaths.convert,
     element: (
       <AppLayout>
-        <ConvertPage />
+        <FxConversionPage />
       </AppLayout>
     ),
     meta: {
-      title: "Convert",
+      title: "FX Conversion",
       requiresAuth: true,
     },
   },
