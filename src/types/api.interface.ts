@@ -42,16 +42,6 @@ export interface PayoutResponse {
   payout_id: string;
 }
 
-export interface AdminMarkPayoutFailedRequest {
-  failure_reason: string;
-}
-
-export interface AdminMarkPayoutFailedResponse {
-  message: string;
-  status: string;
-  payout_id: string;
-}
-
 export interface BalanceResponse {
   currency_code: string;
   balance_cents: number;

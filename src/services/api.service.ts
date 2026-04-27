@@ -6,8 +6,6 @@ import {
 } from '../constants/transactions';
 import { axiosClient } from './axiosClient';
 import type {
-  AdminMarkPayoutFailedRequest,
-  AdminMarkPayoutFailedResponse,
   AuthResponse,
   AuthUser,
   BalanceResponse,
@@ -102,22 +100,6 @@ export class AuthenticationService {
       return response.data;
     } catch (e) {
       console.error('Failed to create payout:', e);
-      throw e;
-    }
-  }
-
-  public async markPayoutFailed(
-    payoutID: string,
-    payload: AdminMarkPayoutFailedRequest,
-  ): Promise<AdminMarkPayoutFailedResponse> {
-    try {
-      const response = await axiosClient.post<AdminMarkPayoutFailedResponse>(
-        `/v1/admin/payouts/${encodeURIComponent(payoutID)}/mark-failed`,
-        payload,
-      );
-      return response.data;
-    } catch (e) {
-      console.error(`Failed to mark payout ${payoutID} as failed:`, e);
       throw e;
     }
   }
