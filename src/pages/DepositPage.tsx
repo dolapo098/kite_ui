@@ -1,4 +1,58 @@
+import { useState } from "react";
+import type { ChangeEvent, FormEvent } from "react";
+import { getDepositErrorMessage, useDepositMutation } from "../hooks/useDepositMutation";
+import { validateDepositForm } from "../utils/depositValidation";
+import type { DepositFormErrors } from "../utils/depositValidation";
+import type { DepositResponse } from "../types";
+
 export function DepositPage() {
+  const depositMutation = useDepositMutation();
+  const [currencyCode, setCurrencyCode] = useState("USD");
+  const [amountInCentsInput, setAmountInCentsInput] = useState("");
+  const [idempotencyKey, setIdempotencyKey] = useState<string>(() => crypto.randomUUID());
+  const [errors, setErrors] = useState<DepositFormErrors>({});
+  const [successData, setSuccessData] = useState<DepositResponse | null>(null);
+
+  function clearFieldError(field: keyof DepositFormErrors): void {
+    setErrors((previousState) => ({ ...previousState, [field]: undefined }));
+  }
+
+  function handleCurrencyChange(event: ChangeEvent<HTMLSelectElement>): void {
+    setCurrencyCode(event.target.value);
+    clearFieldError("currency_code");
+  }
+
+  function handleAmountChange(event: ChangeEvent<HTMLInputElement>): void {
+    setAmountInCentsInput(event.target.value);
+    clearFieldError("amount_in_cents");
+  }
+
+  function handleDepositSuccess(data: DepositResponse): void {
+    setSuccessData(data);
+    setAmountInCentsInput("");
+    setIdempotencyKey(crypto.randomUUID());
+  }
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>): void {
+    event.preventDefault();
+    setSuccessData(null);
+
+    const validationErrors = validateDepositForm(currencyCode, amountInCentsInput);
+    setErrors(validationErrors);
+    if (Object.keys(validationErrors).length > 0) {
+      return;
+    }
+
+    depositMutation.mutate(
+      {
+        currency_code: currencyCode.trim().toUpperCase(),
+        amount_in_cents: Number(amountInCentsInput),
+        idempotency_key: idempotencyKey.trim(),
+      },
+      { onSuccess: handleDepositSuccess },
+    );
+  }
+
   return (
     <div className="page">
       <header className="page-header">
@@ -7,25 +61,49 @@ export function DepositPage() {
       </header>
 
       <article className="card form-card">
-        <label className="field">
-          <span>Currency</span>
-          <select>
-            <option>USD</option>
-            <option>GBP</option>
-            <option>EUR</option>
-            <option>NGN</option>
-            <option>KES</option>
-          </select>
-        </label>
+        <form className="auth-form" onSubmit={handleSubmit} noValidate>
+          <label className="field">
+            <span>Currency</span>
+            <select value={currencyCode} onChange={handleCurrencyChange}>
+              <option value="USD">USD</option>
+              <option value="GBP">GBP</option>
+              <option value="EUR">EUR</option>
+              <option value="NGN">NGN</option>
+              <option value="KES">KES</option>
+            </select>
+            {errors.currency_code ? <p className="error-text">{errors.currency_code}</p> : null}
+          </label>
 
-        <label className="field">
-          <span>Amount</span>
-          <input type="number" placeholder="0.00" min="0" step="0.01" />
-        </label>
+          <label className="field">
+            <span>Amount (in cents)</span>
+            <input
+              type="number"
+              placeholder="e.g. 5000"
+              min="1"
+              step="1"
+              value={amountInCentsInput}
+              onChange={handleAmountChange}
+              aria-invalid={Boolean(errors.amount_in_cents)}
+            />
+            {errors.amount_in_cents ? (
+              <p className="error-text">{errors.amount_in_cents}</p>
+            ) : null}
+          </label>
 
-        <button type="button" className="primary-btn">
-          Create Deposit
-        </button>
+          {depositMutation.isError ? (
+            <p className="error-text">{getDepositErrorMessage(depositMutation.error)}</p>
+          ) : null}
+
+          {successData ? (
+            <p className="success-text">
+              {successData.message} ({successData.status})
+            </p>
+          ) : null}
+
+          <button type="submit" className="primary-btn" disabled={depositMutation.isPending}>
+            {depositMutation.isPending ? "Processing..." : "Create Deposit"}
+          </button>
+        </form>
       </article>
     </div>
   );
