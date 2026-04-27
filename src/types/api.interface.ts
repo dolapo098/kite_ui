@@ -57,6 +57,29 @@ export interface BalanceResponse {
   balance_cents: number;
 }
 
+export interface TransactionItemResponse {
+  id: string;
+  type: string;
+  status: string;
+  amount_in_cents: number;
+  amount_out_cents: number | null;
+  source_currency_code: string;
+  target_currency_code: string | null;
+  created_at: string;
+}
+
+export interface PaginationResponse {
+  page: number;
+  limit: number;
+  total_items: number;
+  total_pages: number;
+}
+
+export interface ListTransactionsResponse {
+  items: TransactionItemResponse[];
+  pagination: PaginationResponse;
+}
+
 export interface ConversionQuoteRequest {
   source_currency_code: string;
   target_currency_code: string;

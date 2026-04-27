@@ -1,4 +1,9 @@
 import { BehaviorSubject } from 'rxjs';
+import {
+  TRANSACTION_LIST_MAX_LIMIT,
+  TRANSACTION_LIST_MIN_LIMIT,
+  TRANSACTION_LIST_MIN_PAGE,
+} from '../constants/transactions';
 import { axiosClient } from './axiosClient';
 import type {
   AdminMarkPayoutFailedRequest,
@@ -13,6 +18,7 @@ import type {
   DepositRequest,
   DepositResponse,
   HealthResponse,
+  ListTransactionsResponse,
   LogoutResponse,
   PayoutRequest,
   PayoutResponse,
@@ -125,6 +131,23 @@ export class AuthenticationService {
       return response.data;
     } catch (e) {
       console.error(`Failed to fetch balance for currency ${currencyCode}:`, e);
+      throw e;
+    }
+  }
+
+  public async listTransactions(params: { page: number; limit: number }): Promise<ListTransactionsResponse> {
+    try {
+      const page = Math.max(TRANSACTION_LIST_MIN_PAGE, Math.floor(params.page));
+      const limit = Math.max(
+        TRANSACTION_LIST_MIN_LIMIT,
+        Math.min(TRANSACTION_LIST_MAX_LIMIT, Math.floor(params.limit)),
+      );
+      const response = await axiosClient.get<ListTransactionsResponse>('/v1/transactions/', {
+        params: { page, limit },
+      });
+      return response.data;
+    } catch (e) {
+      console.error('Failed to list transactions:', e);
       throw e;
     }
   }

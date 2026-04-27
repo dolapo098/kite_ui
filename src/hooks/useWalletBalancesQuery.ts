@@ -1,9 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
+import { WALLET_BALANCES_QUERY_KEY_ROOT, WALLET_SUPPORTED_CURRENCIES } from "../constants/wallet";
 import { authenticationService } from "../services";
 import type { BalanceResponse } from "../types";
 
-export const WALLET_CURRENCIES = ["USD", "GBP", "EUR", "NGN", "KES"] as const;
+export { WALLET_SUPPORTED_CURRENCIES as WALLET_CURRENCIES } from "../constants/wallet";
 
 function extractWalletBalancesErrorMessage(error: unknown): string {
   if (isAxiosError<{ message?: string }>(error)) {
@@ -17,10 +18,10 @@ function extractWalletBalancesErrorMessage(error: unknown): string {
 
 export function useWalletBalancesQuery() {
   return useQuery({
-    queryKey: ["walletBalances", ...WALLET_CURRENCIES],
+    queryKey: [WALLET_BALANCES_QUERY_KEY_ROOT, ...WALLET_SUPPORTED_CURRENCIES],
     queryFn: (): Promise<BalanceResponse[]> =>
       Promise.all(
-        WALLET_CURRENCIES.map((code) => authenticationService.getBalanceByCurrency(code)),
+        WALLET_SUPPORTED_CURRENCIES.map((code) => authenticationService.getBalanceByCurrency(code)),
       ),
   });
 }
