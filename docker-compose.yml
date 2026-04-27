@@ -1,0 +1,17 @@
+# GreyPaymentUI — static build + nginx.
+# Build: docker compose build
+# Run:  docker compose up
+# App:  http://localhost:4173
+#
+# API URL is baked at image build time (must work in the browser):
+#   set VITE_API_URL before build, e.g. VITE_API_URL=http://localhost:8080
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:8080}
+    ports:
+      - "4173:80"
