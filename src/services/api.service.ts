@@ -1,6 +1,23 @@
 import { BehaviorSubject } from 'rxjs';
 import { axiosClient } from './axiosClient';
-import type { AuthResponse, AuthUser, LogoutResponse, UserCredentials } from '../types';
+import type {
+  AdminMarkPayoutFailedRequest,
+  AdminMarkPayoutFailedResponse,
+  AuthResponse,
+  AuthUser,
+  BalanceResponse,
+  ConversionExecuteRequest,
+  ConversionExecuteResponse,
+  ConversionQuoteRequest,
+  ConversionQuoteResponse,
+  DepositRequest,
+  DepositResponse,
+  HealthResponse,
+  LogoutResponse,
+  PayoutRequest,
+  PayoutResponse,
+  UserCredentials,
+} from '../types';
 
 export class AuthenticationService {
   private currentUserSubject: BehaviorSubject<AuthUser | null> = new BehaviorSubject<AuthUser | null>(
@@ -46,6 +63,105 @@ export class AuthenticationService {
       this.currentUserSubject.next(null);
     } catch (e) {
       console.error('Failed to log out user:', e);
+      throw e;
+    }
+  }
+
+  public async createDeposit(payload: DepositRequest): Promise<DepositResponse> {
+    try {
+      const response = await axiosClient.post<DepositResponse>('/v1/deposits/', payload);
+      return response.data;
+    } catch (e) {
+      console.error('Failed to create deposit:', e);
+      throw e;
+    }
+  }
+
+  public async createPayout(payload: PayoutRequest): Promise<PayoutResponse> {
+    try {
+      const response = await axiosClient.post<PayoutResponse>('/v1/payouts/', payload);
+      return response.data;
+    } catch (e) {
+      console.error('Failed to create payout:', e);
+      throw e;
+    }
+  }
+
+  public async markPayoutFailed(
+    payoutID: string,
+    payload: AdminMarkPayoutFailedRequest,
+  ): Promise<AdminMarkPayoutFailedResponse> {
+    try {
+      const response = await axiosClient.post<AdminMarkPayoutFailedResponse>(
+        `/v1/admin/payouts/${encodeURIComponent(payoutID)}/mark-failed`,
+        payload,
+      );
+      return response.data;
+    } catch (e) {
+      console.error(`Failed to mark payout ${payoutID} as failed:`, e);
+      throw e;
+    }
+  }
+
+  public async getBalanceByCurrency(currencyCode: string): Promise<BalanceResponse> {
+    try {
+      const normalizedCurrencyCode = currencyCode.trim().toUpperCase();
+      const response = await axiosClient.get<BalanceResponse>(
+        `/v1/transactions/balances/${encodeURIComponent(normalizedCurrencyCode)}`,
+      );
+      return response.data;
+    } catch (e) {
+      console.error(`Failed to fetch balance for currency ${currencyCode}:`, e);
+      throw e;
+    }
+  }
+
+  public async createConversionQuote(
+    payload: ConversionQuoteRequest,
+  ): Promise<ConversionQuoteResponse> {
+    try {
+      const response = await axiosClient.post<ConversionQuoteResponse>(
+        '/v1/conversions/quote',
+        payload,
+      );
+      return response.data;
+    } catch (e) {
+      console.error('Failed to create conversion quote:', e);
+      throw e;
+    }
+  }
+
+  public async executeConversionQuote(
+    payload: ConversionExecuteRequest,
+  ): Promise<ConversionExecuteResponse> {
+    try {
+      const response = await axiosClient.post<ConversionExecuteResponse>(
+        '/v1/conversions/execute',
+        payload,
+      );
+      return response.data;
+    } catch (e) {
+      console.error('Failed to execute conversion quote:', e);
+      throw e;
+    }
+  }
+
+  public async getLiveHealth(): Promise<HealthResponse> {
+    try {
+      const response = await axiosClient.get<HealthResponse>('/.well-known/live');
+      return response.data;
+    } catch (e) {
+      console.error('Failed to fetch live health:', e);
+      throw e;
+    }
+  }
+
+  public async getReadyHealth(): Promise<HealthResponse> {
+    try {
+      const response = await axiosClient.get<HealthResponse>('/.well-known/ready');
+      return response.data;
+    } catch (e) {
+      console.error('Failed to fetch ready health:', e);
       throw e;
     }
   }
