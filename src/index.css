@@ -295,6 +295,56 @@ body {
   color: var(--color-text-secondary);
 }
 
+.field-hint {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+}
+
+.payout-admin-context {
+  margin-bottom: 0.75rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-border);
+  background: #f8fafc;
+}
+
+.payout-admin-context-title {
+  margin: 0;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--color-text-primary);
+}
+
+.payout-admin-context-detail {
+  margin: 0.45rem 0 0;
+  color: #334155;
+}
+
+.payout-admin-context-foot {
+  margin: 0.35rem 0 0;
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+}
+
+.payout-admin-confirm {
+  margin-top: 0.35rem;
+}
+
+.payout-admin-confirm-question {
+  margin: 0 0 0.65rem;
+  font-size: 0.95rem;
+  color: var(--color-text-primary);
+  line-height: 1.45;
+}
+
+.admin-confirm-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+}
+
 .form-card {
   display: flex;
   flex-direction: column;
@@ -314,15 +364,18 @@ body {
 }
 
 .field input,
-.field select {
+.field select,
+.field textarea {
   border: 1px solid #cbd5e1;
   border-radius: 0.5rem;
   padding: 0.6rem 0.7rem;
   font-size: 0.95rem;
+  font-family: inherit;
 }
 
 .field input:focus,
-.field select:focus {
+.field select:focus,
+.field textarea:focus {
   outline: 2px solid var(--color-primary-soft);
   border-color: var(--color-primary);
 }
