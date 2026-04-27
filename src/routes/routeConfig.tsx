@@ -1,4 +1,3 @@
-import type { ReactNode } from "react";
 import { Navigate } from "react-router-dom";
 import { AppLayout } from "../app/AppLayout";
 import { ConvertPage } from "../pages/ConvertPage";
@@ -9,28 +8,102 @@ import { TransactionsPage } from "../pages/TransactionsPage";
 import { LoginPage } from "../pages/auth/LoginPage";
 import { SignupPage } from "../pages/auth/SignupPage";
 import { routePaths } from "./routePaths";
+import { AppRouteObject } from "./appRouteObject";
 
-export type AppRoute = {
-  path: string;
-  element: ReactNode;
-};
-
-export const authRoutes: AppRoute[] = [
-  { path: routePaths.login, element: <LoginPage /> },
-  { path: routePaths.signup, element: <SignupPage /> },
+export const routes: AppRouteObject[] = [
+  {
+    path: routePaths.home,
+    element: <Navigate to={routePaths.dashboard} replace />,
+    meta: {
+      title: "Home",
+      canLandingPage: true,
+      hideFromNav: true,
+    },
+  },
+  {
+    path: routePaths.login,
+    element: <LoginPage />,
+    meta: {
+      title: "Login",
+      isPublic: true,
+      hideFromNav: true,
+    },
+  },
+  {
+    path: routePaths.signup,
+    element: <SignupPage />,
+    meta: {
+      title: "Sign Up",
+      isPublic: true,
+      hideFromNav: true,
+    },
+  },
+  {
+    path: routePaths.dashboard,
+    element: (
+      <AppLayout>
+        <DashboardPage />
+      </AppLayout>
+    ),
+    meta: {
+      title: "Dashboard",
+      requiresAuth: true,
+    },
+  },
+  {
+    path: routePaths.deposit,
+    element: (
+      <AppLayout>
+        <DepositPage />
+      </AppLayout>
+    ),
+    meta: {
+      title: "Deposit",
+      requiresAuth: true,
+    },
+  },
+  {
+    path: routePaths.convert,
+    element: (
+      <AppLayout>
+        <ConvertPage />
+      </AppLayout>
+    ),
+    meta: {
+      title: "Convert",
+      requiresAuth: true,
+    },
+  },
+  {
+    path: routePaths.payout,
+    element: (
+      <AppLayout>
+        <PayoutPage />
+      </AppLayout>
+    ),
+    meta: {
+      title: "Payout",
+      requiresAuth: true,
+    },
+  },
+  {
+    path: routePaths.transactions,
+    element: (
+      <AppLayout>
+        <TransactionsPage />
+      </AppLayout>
+    ),
+    meta: {
+      title: "Transactions",
+      requiresAuth: true,
+    },
+  },
+  {
+    path: "*",
+    element: <Navigate to={routePaths.dashboard} replace />,
+    meta: {
+      title: "Fallback",
+      hideFromNav: true,
+    },
+  },
 ];
-
-export const appRoutes: AppRoute[] = [
-  { path: routePaths.dashboard, element: <DashboardPage /> },
-  { path: routePaths.deposit, element: <DepositPage /> },
-  { path: routePaths.convert, element: <ConvertPage /> },
-  { path: routePaths.payout, element: <PayoutPage /> },
-  { path: routePaths.transactions, element: <TransactionsPage /> },
-];
-
-export const defaultRedirects = {
-  home: <Navigate to={routePaths.dashboard} replace />,
-  fallback: <Navigate to={routePaths.dashboard} replace />,
-};
-
-export { AppLayout };
