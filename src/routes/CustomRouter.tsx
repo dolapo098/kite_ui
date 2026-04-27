@@ -6,11 +6,13 @@ import { ProtectedRoute } from './ProtectedRoute';
 interface CustomRouterProps {
   routes: AppRouteObject[];
   isAuthenticated: boolean;
+  sessionChecked: boolean;
 }
 
 export const CustomRouter: React.FC<CustomRouterProps> = ({
   routes,
   isAuthenticated,
+  sessionChecked,
 }) => {
   return (
     <Routes>
@@ -22,6 +24,7 @@ export const CustomRouter: React.FC<CustomRouterProps> = ({
             <ProtectedRoute
               route={route}
               isAuthenticated={isAuthenticated}
+              sessionChecked={sessionChecked}
             >
               {route.element}
             </ProtectedRoute>

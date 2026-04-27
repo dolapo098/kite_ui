@@ -54,6 +54,19 @@ export class AuthenticationService {
     }
   }
 
+  public async fetchCurrentUser(): Promise<AuthUser | null> {
+    try {
+      const response = await axiosClient.get<AuthResponse>('/v1/auth/current-user');
+      const user = response.data.user;
+      this.currentUserSubject.next(user);
+      return user;
+    } catch (e) {
+      console.error('Failed to fetch current user:', e);
+      this.currentUserSubject.next(null);
+      return null;
+    }
+  }
+
   public async logout(): Promise<void> {
     try {
       const response = await axiosClient.post<LogoutResponse>('/v1/auth/logout');

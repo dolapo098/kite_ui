@@ -8,29 +8,54 @@ interface ProtectedRouteProps {
   route: AppRouteObject;
   children: ReactNode;
   isAuthenticated: boolean;
+  sessionChecked: boolean;
 }
 
 export function ProtectedRoute({
   route,
   children,
   isAuthenticated,
+  sessionChecked,
 }: ProtectedRouteProps) {
   const location = useLocation();
   const accessResult = isRouteAccessible(route, isAuthenticated);
 
-  if (!accessResult.canAccess) {
-    if (route.meta?.requiresAuth && !isAuthenticated) {
-      return <Navigate to={`${routePaths.login}?returnUrl=${encodeURIComponent(location.pathname)}`} replace />;
-    }
-  }
+  const showBootstrap = Boolean(route.meta?.requiresAuth && !sessionChecked);
+  const showLoginNavigate = Boolean(
+    sessionChecked &&
+      !accessResult.canAccess &&
+      route.meta?.requiresAuth &&
+      !isAuthenticated,
+  );
+  const showDashboardNavigate = Boolean(
+    sessionChecked &&
+      route.meta?.isPublic &&
+      isAuthenticated &&
+      (route.path === routePaths.login || route.path === routePaths.signup),
+  );
+  const showChildren = !showBootstrap && !showLoginNavigate && !showDashboardNavigate;
 
-  if (route.meta?.isPublic) {
-    if (isAuthenticated && (route.path === routePaths.login || route.path === routePaths.signup)) {
-      return <Navigate to={routePaths.dashboard} replace />;
-    }
+  return (
+    <>
+      {showBootstrap ? (
+        <div className="auth-shell">
+          <article className="card auth-card">
+            <p className="brand-eyebrow">Grey Payment</p>
+            <h3>Checking authentication...</h3>
+          </article>
+        </div>
+      ) : null}
 
-    return <>{children}</>;
-  }
+      {showLoginNavigate ? (
+        <Navigate
+          to={`${routePaths.login}?returnUrl=${encodeURIComponent(location.pathname)}`}
+          replace
+        />
+      ) : null}
 
-  return <>{children}</>;
+      {showDashboardNavigate ? <Navigate to={routePaths.dashboard} replace /> : null}
+
+      {showChildren ? <>{children}</> : null}
+    </>
+  );
 }
