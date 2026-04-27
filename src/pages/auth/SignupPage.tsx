@@ -43,15 +43,15 @@ export function SignupPage() {
 
     const validationErrors = validateSignupForm(email, password, confirmPassword);
     setErrors(validationErrors);
-    if (Object.keys(validationErrors).length > 0) {
-      return;
+    if (Object.keys(validationErrors).length === 0) {
+      signupMutation.mutate(
+        { email: email.trim(), password },
+        { onSuccess: handleSignupSuccess },
+      );
     }
-
-    signupMutation.mutate(
-      { email: email.trim(), password },
-      { onSuccess: handleSignupSuccess },
-    );
   }
+
+  const showSignupMutationError = signupMutation.isError;
 
   return (
     <div className="auth-shell">
@@ -98,7 +98,7 @@ export function SignupPage() {
             ) : null}
           </label>
 
-          {signupMutation.isError ? (
+          {showSignupMutationError ? (
             <p className="error-text">{getAuthErrorMessage(signupMutation.error)}</p>
           ) : null}
 

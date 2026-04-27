@@ -39,19 +39,22 @@ export function DepositPage() {
 
     const validationErrors = validateDepositForm(currencyCode, amountInCentsInput);
     setErrors(validationErrors);
-    if (Object.keys(validationErrors).length > 0) {
-      return;
+    if (Object.keys(validationErrors).length === 0) {
+      depositMutation.mutate(
+        {
+          currency_code: currencyCode.trim().toUpperCase(),
+          amount_in_cents: Number(amountInCentsInput),
+          idempotency_key: idempotencyKey.trim(),
+        },
+        { onSuccess: handleDepositSuccess },
+      );
     }
-
-    depositMutation.mutate(
-      {
-        currency_code: currencyCode.trim().toUpperCase(),
-        amount_in_cents: Number(amountInCentsInput),
-        idempotency_key: idempotencyKey.trim(),
-      },
-      { onSuccess: handleDepositSuccess },
-    );
   }
+
+  const showDepositMutationError = depositMutation.isError;
+  const depositSuccessMessage =
+    successData !== null ? `${successData.message} (${successData.status})` : null;
+  const showDepositSuccess = depositSuccessMessage !== null;
 
   return (
     <div className="page">
@@ -90,15 +93,11 @@ export function DepositPage() {
             ) : null}
           </label>
 
-          {depositMutation.isError ? (
+          {showDepositMutationError ? (
             <p className="error-text">{getDepositErrorMessage(depositMutation.error)}</p>
           ) : null}
 
-          {successData ? (
-            <p className="success-text">
-              {successData.message} ({successData.status})
-            </p>
-          ) : null}
+          {showDepositSuccess ? <p className="success-text">{depositSuccessMessage}</p> : null}
 
           <button type="submit" className="primary-btn" disabled={depositMutation.isPending}>
             {depositMutation.isPending ? "Processing..." : "Create Deposit"}

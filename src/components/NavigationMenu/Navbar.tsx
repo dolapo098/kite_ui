@@ -46,6 +46,9 @@ export function Navbar({
     onLogout?.();
   }
 
+  const showGuestAuth = !isAuthenticated;
+  const showUserSession = isAuthenticated;
+
   return (
     <nav className={`navbar ${className}`}>
       <div className="navbar-inner">
@@ -77,7 +80,7 @@ export function Navbar({
             </div>
           ) : null}
 
-          {!isAuthenticated ? (
+          {showGuestAuth ? (
             <div className="navbar-auth-links">
               <Link to={routePaths.login} className="navbar-link">
                 <LogIn size={16} />
@@ -88,7 +91,9 @@ export function Navbar({
                 <span>Sign Up</span>
               </Link>
             </div>
-          ) : (
+          ) : null}
+
+          {showUserSession ? (
             <div className="navbar-user">
               <div className="navbar-user-email">
                 <User size={16} />
@@ -99,7 +104,7 @@ export function Navbar({
                 <span>Logout</span>
               </button>
             </div>
-          )}
+          ) : null}
         </div>
       </div>
     </nav>

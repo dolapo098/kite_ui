@@ -66,22 +66,25 @@ export function PayoutPage() {
       accountName,
     );
     setErrors(validationErrors);
-    if (Object.keys(validationErrors).length > 0) {
-      return;
+    if (Object.keys(validationErrors).length === 0) {
+      payoutMutation.mutate(
+        {
+          source_currency_code: sourceCurrencyCode.trim().toUpperCase(),
+          amount_in_cents: Number(amountInCentsInput),
+          account_number: accountNumber.trim(),
+          bank_code: bankCode.trim(),
+          account_name: accountName.trim(),
+          reference: reference.trim(),
+        },
+        { onSuccess: handlePayoutSuccess },
+      );
     }
-
-    payoutMutation.mutate(
-      {
-        source_currency_code: sourceCurrencyCode.trim().toUpperCase(),
-        amount_in_cents: Number(amountInCentsInput),
-        account_number: accountNumber.trim(),
-        bank_code: bankCode.trim(),
-        account_name: accountName.trim(),
-        reference: reference.trim(),
-      },
-      { onSuccess: handlePayoutSuccess },
-    );
   }
+
+  const showPayoutMutationError = payoutMutation.isError;
+  const payoutSuccessMessage =
+    successData !== null ? `${successData.message} (${successData.status})` : null;
+  const showPayoutSuccess = payoutSuccessMessage !== null;
 
   return (
     <div className="page">
@@ -156,15 +159,11 @@ export function PayoutPage() {
             {errors.account_name ? <p className="error-text">{errors.account_name}</p> : null}
           </label>
 
-          {payoutMutation.isError ? (
+          {showPayoutMutationError ? (
             <p className="error-text">{getPayoutErrorMessage(payoutMutation.error)}</p>
           ) : null}
 
-          {successData ? (
-            <p className="success-text">
-              {successData.message} ({successData.status})
-            </p>
-          ) : null}
+          {showPayoutSuccess ? <p className="success-text">{payoutSuccessMessage}</p> : null}
 
           <button type="submit" className="primary-btn" disabled={payoutMutation.isPending}>
             {payoutMutation.isPending ? "Processing..." : "Submit Payout"}

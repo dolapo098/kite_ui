@@ -4,11 +4,14 @@ const sampleRows = [
   { id: "TX-9010", type: "payout", status: "processing", amount: "40,000.00 NGN", when: "Yesterday, 18:22" },
 ];
 
-function getStatusClass(status: string) {
-  if (status === "successful") return "status-chip success";
-  if (status === "processing" || status === "pending") return "status-chip warning";
-  if (status === "failed") return "status-chip error";
-  return "status-chip";
+function getStatusClass(status: string): string {
+  const base = "status-chip";
+  const isSuccess = status === "successful";
+  const isPending = status === "processing" || status === "pending";
+  const isFailed = status === "failed";
+  const modifier = isSuccess ? " success" : isPending ? " warning" : isFailed ? " error" : "";
+
+  return `${base}${modifier}`;
 }
 
 export function TransactionsPage() {

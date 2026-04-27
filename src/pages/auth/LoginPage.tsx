@@ -36,15 +36,15 @@ export function LoginPage() {
 
     const validationErrors = validateLoginForm(email, password);
     setErrors(validationErrors);
-    if (Object.keys(validationErrors).length > 0) {
-      return;
+    if (Object.keys(validationErrors).length === 0) {
+      loginMutation.mutate(
+        { email: email.trim(), password },
+        { onSuccess: handleLoginSuccess },
+      );
     }
-
-    loginMutation.mutate(
-      { email: email.trim(), password },
-      { onSuccess: handleLoginSuccess },
-    );
   }
+
+  const showLoginMutationError = loginMutation.isError;
 
   return (
     <div className="auth-shell">
@@ -77,7 +77,7 @@ export function LoginPage() {
             {errors.password ? <p className="error-text">{errors.password}</p> : null}
           </label>
 
-          {loginMutation.isError ? (
+          {showLoginMutationError ? (
             <p className="error-text">{getAuthErrorMessage(loginMutation.error)}</p>
           ) : null}
 
