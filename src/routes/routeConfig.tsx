@@ -8,7 +8,7 @@ import { TransactionsPage } from "../pages/TransactionsPage";
 import { LoginPage } from "../pages/auth/LoginPage";
 import { SignupPage } from "../pages/auth/SignupPage";
 import { routePaths } from "./routePaths";
-import { AppRouteObject } from "./appRouteObject";
+import type { AppRouteObject } from "./appRouteObject";
 
 export const routes: AppRouteObject[] = [
   {

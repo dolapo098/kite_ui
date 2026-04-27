@@ -1,13 +1,9 @@
-import React from "react";
-import { Navbar } from "./index";
-import { useAppSelector, useAppDispatch } from "../../hooks";
+import type { ReactNode } from "react";
 
-interface LayoutProps {
-  children: React.ReactNode;
-  currentPage?: string;
-  onPageChange?: (page: string) => void;
+interface AppLayoutProps {
+  children: ReactNode;
 }
 
-export function AppLayout({ children }: LayoutProps) {
-  return <div className='min-h-screen bg-gray-50'>{children}</div>;
+export function AppLayout({ children }: AppLayoutProps) {
+  return <div className="min-h-screen bg-gray-50">{children}</div>;
 }
