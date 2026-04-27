@@ -368,6 +368,10 @@ body {
   font-size: 0.92rem;
 }
 
+.transaction-type {
+  text-transform: capitalize;
+}
+
 .status-chip {
   display: inline-block;
   border-radius: 9999px;

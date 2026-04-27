@@ -94,7 +94,7 @@ export const routes: AppRouteObject[] = [
       </AppLayout>
     ),
     meta: {
-      title: "Transactions",
+      title: "Transaction history",
       requiresAuth: true,
     },
   },

@@ -52,8 +52,8 @@ export function TransactionsPage() {
   return (
     <div className="page">
       <header className="page-header">
-        <h3>Transactions</h3>
-        <p>Unified activity feed for deposits, conversions, and payouts.</p>
+        <h3>Transaction history</h3>
+        <p>Unified, paginated feed of deposits, conversions, and payouts (newest first).</p>
       </header>
 
       {showTransactionsError ? (
@@ -69,7 +69,6 @@ export function TransactionsPage() {
         <table className="table">
           <thead>
             <tr>
-              <th>Reference</th>
               <th>Type</th>
               <th>Status</th>
               <th>Amount</th>
@@ -79,13 +78,13 @@ export function TransactionsPage() {
           <tbody>
             {showLoadingRow ? (
               <tr>
-                <td colSpan={5}>Loading…</td>
+                <td colSpan={4}>Loading…</td>
               </tr>
             ) : null}
 
             {showEmptyRow ? (
               <tr>
-                <td colSpan={5} className="muted">
+                <td colSpan={4} className="muted">
                   No transactions yet.
                 </td>
               </tr>
@@ -94,8 +93,7 @@ export function TransactionsPage() {
             {showDataRows
               ? items.map((row: TransactionItemResponse) => (
                   <tr key={row.id}>
-                    <td>{row.id}</td>
-                    <td>{row.type}</td>
+                    <td className="transaction-type">{row.type}</td>
                     <td>
                       <span className={getStatusClass(row.status)}>{row.status}</span>
                     </td>
