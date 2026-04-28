@@ -160,6 +160,159 @@ Base URL: **`VITE_API_URL`**. All `/v1/...` routes expect the session cookie unl
 | `GET`  | `/.well-known/live`                         |
 | `GET`  | `/.well-known/ready`                        |
 
+## 5. User testing guide
+
+This section is a practical walkthrough for anyone testing the app for the first time.
+
+### Before you test
+
+- Make sure the UI is running in the browser.
+- Make sure the API is running and reachable.
+- Start in a fresh browser tab.
+
+### Step 1: Create a user account (Sign Up)
+
+Important: new users are created on the **Sign Up** page, not on the Login page.
+
+1. Open **Sign Up**.
+2. Enter email, password, and confirm password.
+3. Click **Sign Up**.
+
+Expected result:
+
+- Account is created and you are taken into the app.
+
+Validation checks:
+
+- Leave all fields empty -> required messages should show.
+- Enter invalid email format -> email validation message.
+- Enter different password and confirm password -> mismatch error.
+- Enter valid values -> signup should succeed.
+
+### Step 2: Log in
+
+1. Open **Login**.
+2. Enter the same email and password used at sign-up.
+3. Click **Login**.
+
+Expected result:
+
+- Successful login takes you to the dashboard.
+
+Validation checks:
+
+- Empty fields -> required messages.
+- Invalid email format -> email validation message.
+- Wrong credentials -> login error message.
+
+### Step 3: Dashboard (balances)
+
+1. Open **Dashboard**.
+2. Review displayed balances.
+
+Expected result:
+
+- Balances load correctly.
+- Values are shown in normal currency format.
+
+### Step 4: Deposit
+
+1. Open **Deposit**.
+2. Select currency and enter an amount.
+3. Submit.
+
+Expected result:
+
+- Deposit succeeds.
+- Balance and transaction history update.
+
+Validation checks:
+
+- Empty amount -> required message.
+- Zero/negative amount -> invalid amount message.
+- Non-numeric amount -> invalid amount message.
+
+### Step 5: FX conversion
+
+1. Open **FX Conversion**.
+2. Select source and destination currencies.
+3. Enter amount and request a quote.
+4. Review quote details and execute conversion.
+
+Expected result:
+
+- Quote appears first, then conversion executes.
+- Balances/history update after success.
+
+Validation checks:
+
+- Same source and destination currency -> blocked.
+- Empty/invalid amount -> validation message.
+- Expired quote (wait too long) -> request a new quote.
+
+### Step 6: Payout
+
+1. Open **Payout**.
+2. Enter required payout details (currency, amount, bank details).
+3. Submit.
+
+Expected result:
+
+- Payout request is created successfully.
+- You can see it in transaction history.
+
+Validation checks:
+
+- Missing required fields -> field errors.
+- Invalid amount -> amount validation message.
+- Invalid bank/account input -> validation message.
+
+### Step 7: Transactions
+
+1. Open **Transactions**.
+2. Confirm deposit, conversion, and payout entries appear.
+3. Use pagination if there are multiple pages.
+
+Expected result:
+
+- Records are listed clearly with amount and status.
+
+### Step 8: Logout
+
+1. Click **Logout**.
+
+Expected result:
+
+- You are returned to login/signup.
+- Protected pages are no longer accessible until logging in again.
+
+### Recommended end-to-end test flow
+
+1. Sign up
+2. Log in
+3. Deposit
+4. Convert currency
+5. Create payout
+6. Check transactions
+7. Log out and log in again
+
+## 6. Trade-offs and test coverage limits
+
+Current trade-offs in this UI:
+
+- Unit tests are in place for core auth flows, but test coverage is still focused on key happy paths.
+- Some product behavior is verified more through manual testing than automated tests right now.
+- Edge cases are only partially covered (for example: unusual API timing, intermittent network failures, session expiry mid-action, and advanced form boundary cases).
+- Integration and end-to-end scenarios are documented in the user testing guide, but not yet fully automated.
+
+What should be expanded next:
+
+- Add more unit tests for edge cases and validation boundaries on all transaction pages.
+- Add behavior-focused tests that check full user journeys, not only isolated component outcomes.
+- Add integration/E2E tests to validate real product behavior across signup, login, deposit, conversion, payout, and history in one run.
+
+## 7 Recorded Video ( Overview) : https://drive.google.com/file/d/1J6zAxtNMS6gQRozciN8cOL6MAh1_BOVe/view?usp=sharing
+
 ## Scripts
 
 | Command           | Description                  |
