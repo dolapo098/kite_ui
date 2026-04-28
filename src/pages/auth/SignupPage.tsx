@@ -3,8 +3,8 @@ import type { ChangeEvent, FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { getAuthErrorMessage, useSignupMutation } from "../../hooks/useAuthMutations";
 import { routePaths } from "../../routes/routePaths";
-import { validateSignupForm } from "../../utils/authValidation";
-import type { AuthFormErrors } from "../../utils/authValidation";
+import { validateSignupForm } from "../../utils/validation";
+import type { AuthFormErrors } from "../../utils/validation";
 
 export function SignupPage() {
   const navigate = useNavigate();

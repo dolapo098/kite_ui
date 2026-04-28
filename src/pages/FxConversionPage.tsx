@@ -16,8 +16,8 @@ import type {
   ConversionExecuteResponse,
   ConversionQuoteResponse,
 } from "../types";
-import { validateConversionQuoteForm } from "../utils/conversionValidation";
-import type { ConversionFormErrors } from "../utils/conversionValidation";
+import { validateConversionQuoteForm } from "../utils/validation";
+import type { ConversionFormErrors } from "../utils/validation";
 import { formatConversionExecuteSuccessMessage } from "../utils/formatConversionExecute";
 import { formatBalanceCentsForDisplay } from "../utils/formatBalance";
 import { formatFxRate } from "../utils/formatFxRate";
@@ -30,7 +30,7 @@ export function FxConversionPage() {
 
   const [sourceCurrencyCode, setSourceCurrencyCode] = useState("USD");
   const [targetCurrencyCode, setTargetCurrencyCode] = useState("NGN");
-  const [amountInCentsInput, setAmountInCentsInput] = useState("");
+  const [amountMajorInput, setAmountMajorInput] = useState("");
   const [errors, setErrors] = useState<ConversionFormErrors>({});
   const [activeQuote, setActiveQuote] =
     useState<ConversionQuoteResponse | null>(null);
@@ -85,7 +85,7 @@ export function FxConversionPage() {
   }
 
   function handleAmountChange(event: ChangeEvent<HTMLInputElement>): void {
-    setAmountInCentsInput(event.target.value);
+    setAmountMajorInput(event.target.value);
     clearFieldError("amount_in_cents");
   }
 
@@ -113,17 +113,21 @@ export function FxConversionPage() {
     const validationErrors = validateConversionQuoteForm(
       sourceCurrencyCode,
       targetCurrencyCode,
-      amountInCentsInput,
+      amountMajorInput,
     );
 
     setErrors(validationErrors);
 
     if (Object.keys(validationErrors).length === 0) {
+      const amountMajorValue = Number(amountMajorInput.trim().replace(/,/g, ""));
+      if (!Number.isFinite(amountMajorValue) || amountMajorValue <= 0) {
+        return;
+      }
       quoteMutation.mutate(
         {
           source_currency_code: sourceCurrencyCode.trim().toUpperCase(),
           target_currency_code: targetCurrencyCode.trim().toUpperCase(),
-          amount_in_cents: Number(amountInCentsInput),
+          amount_in_cents: Math.round((amountMajorValue + Number.EPSILON) * 100),
         },
         { onSuccess: handleQuoteSuccess },
       );
@@ -193,13 +197,13 @@ export function FxConversionPage() {
             </label>
 
             <label className='field'>
-              <span>Amount (in cents)</span>
+              <span>Amount ({sourceCurrencyCode})</span>
               <input
                 type='number'
-                placeholder='e.g. 10000'
-                min='1'
-                step='1'
-                value={amountInCentsInput}
+                placeholder='e.g. 100.00'
+                min='0.01'
+                step='0.01'
+                value={amountMajorInput}
                 onChange={handleAmountChange}
                 aria-invalid={Boolean(errors.amount_in_cents)}
               />

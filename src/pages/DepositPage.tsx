@@ -1,14 +1,14 @@
 import { useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import { getDepositErrorMessage, useDepositMutation } from "../hooks/useDepositMutation";
-import { validateDepositForm } from "../utils/depositValidation";
-import type { DepositFormErrors } from "../utils/depositValidation";
+import { validateDepositForm } from "../utils/validation";
+import type { DepositFormErrors } from "../utils/validation";
 import type { DepositResponse } from "../types";
 
 export function DepositPage() {
   const depositMutation = useDepositMutation();
   const [currencyCode, setCurrencyCode] = useState("USD");
-  const [amountInCentsInput, setAmountInCentsInput] = useState("");
+  const [amountMajorInput, setAmountMajorInput] = useState("");
   const [idempotencyKey, setIdempotencyKey] = useState<string>(() => crypto.randomUUID());
   const [errors, setErrors] = useState<DepositFormErrors>({});
   const [successData, setSuccessData] = useState<DepositResponse | null>(null);
@@ -23,13 +23,13 @@ export function DepositPage() {
   }
 
   function handleAmountChange(event: ChangeEvent<HTMLInputElement>): void {
-    setAmountInCentsInput(event.target.value);
+    setAmountMajorInput(event.target.value);
     clearFieldError("amount_in_cents");
   }
 
   function handleDepositSuccess(data: DepositResponse): void {
     setSuccessData(data);
-    setAmountInCentsInput("");
+    setAmountMajorInput("");
     setIdempotencyKey(crypto.randomUUID());
   }
 
@@ -37,13 +37,13 @@ export function DepositPage() {
     event.preventDefault();
     setSuccessData(null);
 
-    const validationErrors = validateDepositForm(currencyCode, amountInCentsInput);
+    const validationErrors = validateDepositForm(currencyCode, amountMajorInput);
     setErrors(validationErrors);
     if (Object.keys(validationErrors).length === 0) {
       depositMutation.mutate(
         {
           currency_code: currencyCode.trim().toUpperCase(),
-          amount_in_cents: Number(amountInCentsInput),
+          amount: amountMajorInput.trim(),
           idempotency_key: idempotencyKey.trim(),
         },
         { onSuccess: handleDepositSuccess },
@@ -78,13 +78,13 @@ export function DepositPage() {
           </label>
 
           <label className="field">
-            <span>Amount (in cents)</span>
+            <span>Amount ({currencyCode})</span>
             <input
               type="number"
-              placeholder="e.g. 5000"
-              min="1"
-              step="1"
-              value={amountInCentsInput}
+              placeholder="e.g. 5000.00"
+              min="0.01"
+              step="0.01"
+              value={amountMajorInput}
               onChange={handleAmountChange}
               aria-invalid={Boolean(errors.amount_in_cents)}
             />

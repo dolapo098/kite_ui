@@ -18,7 +18,8 @@ export interface LogoutResponse {
 
 export interface DepositRequest {
   currency_code: string;
-  amount_in_cents: number;
+  amount?: string;
+  amount_in_cents?: number;
   idempotency_key: string;
 }
 
@@ -29,7 +30,8 @@ export interface DepositResponse {
 
 export interface PayoutRequest {
   source_currency_code: string;
-  amount_in_cents: number;
+  amount?: string;
+  amount_in_cents?: number;
   account_number: string;
   bank_code: string;
   account_name: string;

@@ -3,8 +3,8 @@ import type { ChangeEvent, FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { getAuthErrorMessage, useLoginMutation } from "../../hooks/useAuthMutations";
 import { routePaths } from "../../routes/routePaths";
-import { validateLoginForm } from "../../utils/authValidation";
-import type { AuthFormErrors } from "../../utils/authValidation";
+import { validateLoginForm } from "../../utils/validation";
+import type { AuthFormErrors } from "../../utils/validation";
 
 export function LoginPage() {
   const navigate = useNavigate();

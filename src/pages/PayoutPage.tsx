@@ -2,14 +2,14 @@ import { useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import { getPayoutErrorMessage, usePayoutMutation } from "../hooks/usePayoutMutation";
 import type { PayoutRequest, PayoutResponse } from "../types";
-import type { PayoutFormErrors } from "../utils/payoutValidation";
-import { validatePayoutForm } from "../utils/payoutValidation";
+import type { PayoutFormErrors } from "../utils/validation";
+import { validatePayoutForm } from "../utils/validation";
 
 export function PayoutPage() {
   const payoutMutation = usePayoutMutation();
 
   const [sourceCurrencyCode, setSourceCurrencyCode] = useState("NGN");
-  const [amountInCentsInput, setAmountInCentsInput] = useState("");
+  const [amountMajorInput, setAmountMajorInput] = useState("");
   const [accountNumber, setAccountNumber] = useState("");
   const [bankCode, setBankCode] = useState("");
   const [accountName, setAccountName] = useState("");
@@ -27,7 +27,7 @@ export function PayoutPage() {
   }
 
   function handleAmountChange(event: ChangeEvent<HTMLInputElement>): void {
-    setAmountInCentsInput(event.target.value);
+    setAmountMajorInput(event.target.value);
     clearFieldError("amount_in_cents");
   }
 
@@ -48,7 +48,7 @@ export function PayoutPage() {
 
   function handlePayoutSuccess(data: PayoutResponse): void {
     setSuccessData(data);
-    setAmountInCentsInput("");
+    setAmountMajorInput("");
     setAccountNumber("");
     setBankCode("");
     setAccountName("");
@@ -61,7 +61,7 @@ export function PayoutPage() {
 
     const validationErrors = validatePayoutForm(
       sourceCurrencyCode,
-      amountInCentsInput,
+      amountMajorInput,
       accountNumber,
       bankCode,
       accountName,
@@ -70,7 +70,7 @@ export function PayoutPage() {
     if (Object.keys(validationErrors).length === 0) {
       const payload: PayoutRequest = {
         source_currency_code: sourceCurrencyCode.trim().toUpperCase(),
-        amount_in_cents: Number(amountInCentsInput),
+        amount: amountMajorInput.trim(),
         account_number: accountNumber.trim(),
         bank_code: bankCode.trim(),
         account_name: accountName.trim(),
@@ -113,13 +113,13 @@ export function PayoutPage() {
           </label>
 
           <label className='field'>
-            <span>Amount (in cents)</span>
+            <span>Amount ({sourceCurrencyCode})</span>
             <input
               type='number'
-              placeholder='e.g. 5000'
-              min='1'
-              step='1'
-              value={amountInCentsInput}
+              placeholder='e.g. 5000.00'
+              min='0.01'
+              step='0.01'
+              value={amountMajorInput}
               onChange={handleAmountChange}
               aria-invalid={Boolean(errors.amount_in_cents)}
             />
