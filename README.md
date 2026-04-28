@@ -13,18 +13,18 @@ The app is a single browser app that talks to the Kite API; you run the UI and t
 - **Routing:** `react-router-dom` with a central route table (`src/routes/routeConfig.tsx`). Public: login, signup. Authenticated screens use `AppLayout` (navigation + shell).
 - **Server state:** TanStack Query for queries/mutations (balances, transactions, deposits, conversions, payouts) for caching, loading/error handling, and cache invalidation after writes.
 - **Auth:** API uses an **HttpOnly** session cookie. The UI does not store JWTs in `localStorage`. Axios uses **`withCredentials: true`** and **`Content-Type: application/json`** so cookies are sent on API requests.
-- **HTTP layer:** `AuthenticationService` (`src/services/api.service.ts`) wraps REST calls; `axiosClient` (`src/services/axiosClient.ts`) sets base URL from **`VITE_API_URL`** (`src/env.ts`, default `http://localhost:8080`) and forwards **XSRF** when a cookie is present.
+- **HTTP layer:** `AuthenticationService` (`src/services/api.service.ts`) wraps REST calls; `axiosClient` (`src/services/axiosClient.ts`) reads base URL from **`VITE_API_URL`** (default `http://localhost:8080`) and forwards **XSRF** when a cookie is present.
 
 **Design decisions**
 
-| Decision | Rationale |
-|----------|-----------|
-| Cookie + credentials | Matches backend HttpOnly session; reduces XSS exposure vs localStorage tokens. |
-| TanStack Query | Clear patterns for async data, retries, and invalidating balances/history after mutations. |
-| Single service for API paths | Keeps URLs and types in one place; pages stay thin. |
-| `VITE_API_URL` | Standard Vite env; embedded at **build** time for static bundles. |
-| FX quote → execute | Mirrors the API’s two-step contract and quote expiry. |
-| Payout flow | Payout is a standalone create flow from the UI. |
+| Decision                     | Rationale                                                                                  |
+| ---------------------------- | ------------------------------------------------------------------------------------------ |
+| Cookie + credentials         | Matches backend HttpOnly session; reduces XSS exposure vs localStorage tokens.             |
+| TanStack Query               | Clear patterns for async data, retries, and invalidating balances/history after mutations. |
+| Single service for API paths | Keeps URLs and types in one place; pages stay thin.                                        |
+| `VITE_API_URL`               | Standard Vite env; embedded at **build** time for static bundles.                          |
+| FX quote → execute           | Mirrors the API’s two-step contract and quote expiry.                                      |
+| Payout flow                  | Payout is a standalone create flow from the UI.                                            |
 
 ## 2. How to run it
 
@@ -35,7 +35,14 @@ Use this if you want the UI running in a container and served by nginx.
 Open a terminal in:
 
 ```bash
-cd C:\Users\dolap\OneDrive\Desktop\GreyUI\GreyPaymentUI
+cd GreyPaymentUI
+```
+
+Set `.env` values:
+
+```env
+VITE_API_URL=http://localhost:8080
+VITE_UI_PORT=4173
 ```
 
 Ensure Docker Desktop is running, then build + start:
@@ -56,7 +63,7 @@ Confirm backend URL used by UI build:
 - So API should be reachable in browser at **http://localhost:8080**
 - Quick health check: **http://localhost:8080/.well-known/live**
 
-If your API is not on port 8080, set `VITE_API_URL` before building/running.
+If your API or UI port differs, update `VITE_API_URL` or `VITE_UI_PORT` in `.env` before building/running.
 
 ### Option B — Local development (Node + Vite)
 
@@ -138,26 +145,26 @@ flowchart TB
 
 Base URL: **`VITE_API_URL`**. All `/v1/...` routes expect the session cookie unless noted.
 
-| Method | Path |
-|--------|------|
-| `POST` | `/v1/auth/signup` |
-| `POST` | `/v1/auth/login` |
-| `POST` | `/v1/auth/logout` |
-| `GET` | `/v1/auth/current-user` |
-| `POST` | `/v1/deposits/` |
-| `POST` | `/v1/conversions/quote` |
-| `POST` | `/v1/conversions/execute` |
-| `POST` | `/v1/payouts/` |
-| `GET` | `/v1/transactions/balances/{currency_code}` |
-| `GET` | `/v1/transactions/` |
-| `GET` | `/.well-known/live` |
-| `GET` | `/.well-known/ready` |
+| Method | Path                                        |
+| ------ | ------------------------------------------- |
+| `POST` | `/v1/auth/signup`                           |
+| `POST` | `/v1/auth/login`                            |
+| `POST` | `/v1/auth/logout`                           |
+| `GET`  | `/v1/auth/current-user`                     |
+| `POST` | `/v1/deposits/`                             |
+| `POST` | `/v1/conversions/quote`                     |
+| `POST` | `/v1/conversions/execute`                   |
+| `POST` | `/v1/payouts/`                              |
+| `GET`  | `/v1/transactions/balances/{currency_code}` |
+| `GET`  | `/v1/transactions/`                         |
+| `GET`  | `/.well-known/live`                         |
+| `GET`  | `/.well-known/ready`                        |
 
 ## Scripts
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Vite dev server |
-| `npm run build` | Typecheck + production build |
-| `npm run preview` | Preview production build |
-| `npm run lint` | ESLint |
+| Command           | Description                  |
+| ----------------- | ---------------------------- |
+| `npm run dev`     | Vite dev server              |
+| `npm run build`   | Typecheck + production build |
+| `npm run preview` | Preview production build     |
+| `npm run lint`    | ESLint                       |

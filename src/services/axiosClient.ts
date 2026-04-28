@@ -1,6 +1,7 @@
 import axios, { AxiosError } from 'axios';
 import type { AxiosInstance, AxiosResponse } from 'axios';
-import { API_URL } from '../env';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
 export class AxiosClientService {
   public axiosInstance: AxiosInstance;
