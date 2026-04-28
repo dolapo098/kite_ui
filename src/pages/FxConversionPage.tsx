@@ -119,7 +119,9 @@ export function FxConversionPage() {
     setErrors(validationErrors);
 
     if (Object.keys(validationErrors).length === 0) {
-      const amountMajorValue = Number(amountMajorInput.trim().replace(/,/g, ""));
+      const amountMajorValue = Number(
+        amountMajorInput.trim().replace(/,/g, ""),
+      );
       if (!Number.isFinite(amountMajorValue) || amountMajorValue <= 0) {
         return;
       }
@@ -127,7 +129,9 @@ export function FxConversionPage() {
         {
           source_currency_code: sourceCurrencyCode.trim().toUpperCase(),
           target_currency_code: targetCurrencyCode.trim().toUpperCase(),
-          amount_in_cents: Math.round((amountMajorValue + Number.EPSILON) * 100),
+          amount_in_cents: Math.round(
+            (amountMajorValue + Number.EPSILON) * 100,
+          ),
         },
         { onSuccess: handleQuoteSuccess },
       );
@@ -256,9 +260,9 @@ export function FxConversionPage() {
                 </strong>
               </p>
               <p className='muted'>
-                Market rate: {formatFxRate(activeQuote.market_rate)} · Quoted
-                rate: {formatFxRate(activeQuote.quoted_rate)} · Spread:{" "}
-                {activeQuote.spread_bps} bps
+                Market rate: {formatFxRate(activeQuote.market_rate)} · Your
+                rate: {formatFxRate(activeQuote.quoted_rate)} · Difference from
+                market price: {(activeQuote.spread_bps / 100).toFixed(2)}%
               </p>
               <p className='muted'>
                 Expires: {formatTransactionDate(activeQuote.expires_at)}

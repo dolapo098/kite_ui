@@ -47,6 +47,7 @@ export interface PayoutResponse {
 export interface BalanceResponse {
   currency_code: string;
   balance_cents: number;
+  balance?: string;
 }
 
 export interface TransactionItemResponse {
@@ -55,6 +56,8 @@ export interface TransactionItemResponse {
   status: string;
   amount_in_cents: number;
   amount_out_cents: number | null;
+  amount?: string;
+  amount_out?: string | null;
   source_currency_code: string;
   target_currency_code: string | null;
   created_at: string;

@@ -35,7 +35,8 @@ export function DashboardPage() {
               {showBalancesLoading
                 ? "…"
                 : balancesQuery.data?.[index]
-                  ? formatBalanceCentsForDisplay(
+                  ? balancesQuery.data[index].balance ??
+                    formatBalanceCentsForDisplay(
                       balancesQuery.data[index].balance_cents,
                       balancesQuery.data[index].currency_code,
                     )
